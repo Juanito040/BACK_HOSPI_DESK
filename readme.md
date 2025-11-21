@@ -1,57 +1,123 @@
+# Hospi-Desk
 
+> Sistema de Gestión de Tickets Hospitalarios basado en Domain-Driven Design (DDD) y Clean Architecture
 
-                                       JUAN MIGUEL RAMIREZ MANCILLA
-
-* PARA CORRER EL PROYECTO: SOLO CONECTAR NUESTRA BD EN EL .ENV , Y CON npm run dev EJECUTAR EL PROYECTO. 
-
-* NOTA IMPORTANTE : INSTALAR NODE , NPM INSTALL  !!
-
-
-
-# Catálogo de Patrones de Diseño — Proyecto Hospi-Desk
-
-Este documento describe los patrones de diseño y arquitectura aplicados en el proyecto **Hospi-Desk**, basado en **Domain-Driven Design (DDD)** y **Clean Architecture**.
+**Autor:** Juan Miguel Ramírez Mancilla  
+**Versión:** 1.0  
+**Fecha:** Noviembre 2025
 
 ---
 
-1. Repository Pattern
-Ubicación: `src/infrastructure/repositories/PrismaTicketRepository.ts`  
-Propósito: Abstraer la lógica de persistencia de datos del dominio.  
-Ventaja: Permite cambiar Prisma por otro ORM o fuente de datos sin afectar la lógica del dominio.  
+## 📋 Tabla de Contenidos
 
-Ejemplo:
-```ts
+- [Instrucciones de Instalación](#-instrucciones-de-instalación)
+- [Catálogo de Patrones de Diseño](#-catálogo-de-patrones-de-diseño)
+  - [1. Repository Pattern](#1-repository-pattern)
+  - [2. Strategy Pattern](#2-strategy-pattern)
+  - [3. Event Bus / Domain Events](#3-event-bus--domain-events)
+  - [4. Value Object](#4-value-object)
+  - [5. Dependency Injection](#5-dependency-injection)
+  - [6. CQRS](#6-cqrs-command-query-responsibility-segregation)
+  - [7. Middleware Pattern](#7-middleware-pattern)
+  - [8. Factory Pattern](#8-factory-pattern)
+  - [9. RBAC](#9-rbac-role-based-access-control)
+  - [10. Adapter Pattern](#10-adapter-pattern)
+  - [11. Mapper Pattern](#11-mapper-pattern)
+  - [12. Domain Service](#12-domain-service)
+- [Diccionario de Datos](#-diccionario-de-datos)
+  - [Tipos Enumerados](#tipos-enumerados)
+  - [Tablas del Sistema](#tablas-del-sistema)
+  - [Relaciones](#relaciones)
+  - [Índices y Restricciones](#índices-y-restricciones)
 
+---
+
+## 🚀 Instrucciones de Instalación
+
+### Requisitos Previos
+- Node.js (versión recomendada: LTS)
+- npm o yarn
+- PostgreSQL
+
+### Pasos de Instalación
+
+1. **Instalar dependencias**
+   ```bash
+   npm install
+   ```
+
+2. **Configurar Base de Datos**
+   - Crear un archivo `.env` en la raíz del proyecto
+   - Configurar la cadena de conexión de PostgreSQL:
+   ```env
+   DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/hospi_desk"
+   ```
+
+3. **Ejecutar el Proyecto**
+   ```bash
+   npm run dev
+   ```
+
+> **⚠️ NOTA IMPORTANTE:** Asegúrate de tener Node.js instalado y ejecutar `npm install` antes de iniciar el proyecto.
+
+---
+
+## 🎨 Catálogo de Patrones de Diseño
+
+Este proyecto implementa múltiples patrones de diseño basados en **Domain-Driven Design (DDD)** y **Clean Architecture** para garantizar un código mantenible, escalable y testeable.
+
+### 1. Repository Pattern
+
+**📍 Ubicación:** `src/infrastructure/repositories/PrismaTicketRepository.ts`
+
+**🎯 Propósito:** Abstraer la lógica de persistencia de datos del dominio.
+
+**✅ Ventaja:** Permite cambiar Prisma por otro ORM o fuente de datos sin afectar la lógica del dominio.
+
+**Ejemplo de implementación:**
+```typescript
 export interface TicketRepository {
   findById(id: string): Promise<Ticket>;
   save(ticket: Ticket): Promise<void>;
 }
-
 
 export class PrismaTicketRepository implements TicketRepository {
   async findById(id: string): Promise<Ticket> {
     return prisma.ticket.findUnique({ where: { id } });
   }
 }
+```
 
-2. Strategy Pattern
+---
 
-Ubicación: src/domain/services/SlaCalculator.ts
-Propósito: Permitir distintas estrategias de cálculo de SLA según tipo de ticket.
-Ventaja: Facilita agregar nuevas políticas sin modificar el código existente.
+### 2. Strategy Pattern
 
-3. Event Bus / Domain Events
+**📍 Ubicación:** `src/domain/services/SlaCalculator.ts`
 
-Ubicación: src/infrastructure/events/
-Propósito: Manejar eventos del dominio como TicketCreated, SlaBreached.
-Ventaja: Desacopla los módulos y permite reacciones asíncronas (por ejemplo, enviar correo o notificación).
+**🎯 Propósito:** Permitir distintas estrategias de cálculo de SLA según tipo de ticket.
 
-4. Value Object
+**✅ Ventaja:** Facilita agregar nuevas políticas sin modificar el código existente.
 
-Ubicación: src/domain/value-objects/Email.ts, src/domain/value-objects/Priority.ts
-Propósito: Encapsular valores inmutables y validar su creación.
-Ejemplo:
+---
 
+### 3. Event Bus / Domain Events
+
+**📍 Ubicación:** `src/infrastructure/events/`
+
+**🎯 Propósito:** Manejar eventos del dominio como `TicketCreated`, `SlaBreached`.
+
+**✅ Ventaja:** Desacopla los módulos y permite reacciones asíncronas (por ejemplo, enviar correo o notificación).
+
+---
+
+### 4. Value Object
+
+**📍 Ubicación:** `src/domain/value-objects/Email.ts`, `src/domain/value-objects/Priority.ts`
+
+**🎯 Propósito:** Encapsular valores inmutables y validar su creación.
+
+**Ejemplo de implementación:**
+```typescript
 export class Email {
   constructor(private readonly value: string) {
     if (!/^[\w.-]+@[\w.-]+\.\w+$/.test(value))
@@ -61,85 +127,99 @@ export class Email {
     return this.value;
   }
 }
+```
 
-5. Dependency Injection
+---
 
-Ubicación: src/main.ts
-Propósito: Inyectar dependencias en lugar de crearlas directamente.
-Ventaja: Facilita el testing y la extensión del sistema.
+### 5. Dependency Injection
 
-6. CQRS (Command Query Responsibility Segregation)
+**📍 Ubicación:** `src/main.ts`
 
-Ubicación: src/application/use-cases/
-Propósito: Separar operaciones de lectura (queries) y escritura (commands).
-Ejemplo: CreateTicket (command) vs ListTickets (query)
+**🎯 Propósito:** Inyectar dependencias en lugar de crearlas directamente.
 
-7. Middleware Pattern
+**✅ Ventaja:** Facilita el testing y la extensión del sistema.
 
-Ubicación: src/interfaces/http/middlewares/
-Propósito: Interceptar peticiones HTTP para manejar autenticación, validación o rate limiting.
+---
 
-8. Factory Pattern
+### 6. CQRS (Command Query Responsibility Segregation)
 
-Ubicación: src/domain/services/TicketFactory.ts
-Propósito: Centralizar la creación de entidades complejas.
+**📍 Ubicación:** `src/application/use-cases/`
 
-9. RBAC (Role-Based Access Control)
+**🎯 Propósito:** Separar operaciones de lectura (queries) y escritura (commands).
 
-Ubicación: src/infrastructure/security/
-Propósito: Controlar el acceso según roles (Admin, Agente, Usuario).
+**Ejemplo:** `CreateTicket` (command) vs `ListTickets` (query)
 
-10. Adapter Pattern
+---
 
-Ubicación: src/infrastructure/notif/
-Propósito: Unificar distintas formas de notificación (Email, SMS, Webhook).
+### 7. Middleware Pattern
 
-11. Mapper Pattern
+**📍 Ubicación:** `src/interfaces/http/middlewares/`
 
-Ubicación: src/interfaces/mappers/
-Propósito: Convertir DTOs a entidades de dominio y viceversa.
+**🎯 Propósito:** Interceptar peticiones HTTP para manejar autenticación, validación o rate limiting.
 
-12. Domain Service
+---
 
-Ubicación: src/domain/services/
-Propósito: Encapsular lógica que pertenece al dominio, pero no a una sola entidad.
+### 8. Factory Pattern
 
-## Diccionario de Datos - Hospi-Desk ##
+**📍 Ubicación:** `src/domain/services/TicketFactory.ts`
 
-**Proyecto:** Sistema de Gestión de Tickets Hospitalarios (Hospi-Desk)
+**🎯 Propósito:** Centralizar la creación de entidades complejas.
+
+---
+
+### 9. RBAC (Role-Based Access Control)
+
+**📍 Ubicación:** `src/infrastructure/security/`
+
+**🎯 Propósito:** Controlar el acceso según roles (Admin, Agente, Usuario).
+
+---
+
+### 10. Adapter Pattern
+
+**📍 Ubicación:** `src/infrastructure/notif/`
+
+**🎯 Propósito:** Unificar distintas formas de notificación (Email, SMS, Webhook).
+
+---
+
+### 11. Mapper Pattern
+
+**📍 Ubicación:** `src/interfaces/mappers/`
+
+**🎯 Propósito:** Convertir DTOs a entidades de dominio y viceversa.
+
+---
+
+### 12. Domain Service
+
+**📍 Ubicación:** `src/domain/services/`
+
+**🎯 Propósito:** Encapsular lógica que pertenece al dominio, pero no a una sola entidad.
+
+---
+
+## 📊 Diccionario de Datos
+
+### Información General
+
+**Base de Datos:** PostgreSQL  
+**ORM:** Prisma  
 **Versión:** 1.0
-**Fecha:** Noviembre 2025
-**Base de Datos:** PostgreSQL
-**ORM:** Prisma
-
----
-
-## Índice
-1. [Descripción General](#descripción-general)
-2. [Tipos Enumerados](#tipos-enumerados)
-3. [Tablas](#tablas)
-4. [Relaciones](#relaciones)
-5. [Índices y Restricciones](#índices-y-restricciones)
-
----
-
-## Descripción General
-
-Este diccionario de datos documenta la estructura de la base de datos del sistema **Hospi-Desk**, una aplicación de gestión de tickets orientada al sector hospitalario. El sistema permite crear, asignar y dar seguimiento a tickets de soporte técnico y solicitudes de servicio.
 
 **Características principales:**
-- Gestión multiárea con SLAs configurables
-- Sistema de roles y permisos (RBAC)
-- Auditoría completa de acciones
-- Gestión de adjuntos y comentarios
-- Base de conocimientos integrada
+- ✅ Gestión multiárea con SLAs configurables
+- ✅ Sistema de roles y permisos (RBAC)
+- ✅ Auditoría completa de acciones
+- ✅ Gestión de adjuntos y comentarios
+- ✅ Base de conocimientos integrada
 
 ---
 
 ## Tipos Enumerados
 
 ### Priority
-**Descripción:** Nivel de prioridad de tickets y SLAs
+Nivel de prioridad de tickets y SLAs
 
 | Valor | Descripción | Uso |
 |-------|-------------|-----|
@@ -151,7 +231,7 @@ Este diccionario de datos documenta la estructura de la base de datos del sistem
 ---
 
 ### Status
-**Descripción:** Estado del ciclo de vida de un ticket
+Estado del ciclo de vida de un ticket
 
 | Valor | Descripción | Transiciones Permitidas |
 |-------|-------------|------------------------|
@@ -164,7 +244,7 @@ Este diccionario de datos documenta la estructura de la base de datos del sistem
 ---
 
 ### Role
-**Descripción:** Rol del usuario en el sistema
+Rol del usuario en el sistema
 
 | Valor | Descripción | Permisos |
 |-------|-------------|----------|
@@ -175,74 +255,62 @@ Este diccionario de datos documenta la estructura de la base de datos del sistem
 
 ---
 
-## Tablas
+## Tablas del Sistema
 
 ### 1. Area
 
-**Descripción:** Representa las diferentes áreas o departamentos del hospital (TI, Mantenimiento, Administración, etc.)
+Representa las diferentes áreas o departamentos del hospital (TI, Mantenimiento, Administración, etc.)
 
-**Nombre en BD:** `Area`
-
-| Campo | Tipo | Nulo | PK/FK | Default | Descripción | Ejemplo |
-|-------|------|------|-------|---------|-------------|---------|
-| id | UUID | NO | PK | `uuid()` | Identificador único del área | `550e8400-e29b-41d4-a716-446655440000` |
-| name | VARCHAR(255) | NO | - | - | Nombre del área/departamento | `"Tecnologías de la Información"` |
-| description | TEXT | SI | - | - | Descripción detallada del área | `"Área encargada de soporte técnico"` |
-| isActive | BOOLEAN | NO | - | `true` | Indica si el área está activa | `true` |
-| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación | `2025-01-15 10:00:00` |
-| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización | `2025-01-20 14:30:00` |
+| Campo | Tipo | Nulo | PK/FK | Default | Descripción |
+|-------|------|------|-------|---------|-------------|
+| id | UUID | NO | PK | `uuid()` | Identificador único del área |
+| name | VARCHAR(255) | NO | - | - | Nombre del área/departamento |
+| description | TEXT | SI | - | - | Descripción detallada del área |
+| isActive | BOOLEAN | NO | - | `true` | Indica si el área está activa |
+| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación |
+| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- El nombre del área debe ser único
-- Solo áreas activas pueden recibir nuevos tickets
-- Al desactivar un área, los tickets existentes no se afectan
+- ✓ El nombre del área debe ser único
+- ✓ Solo áreas activas pueden recibir nuevos tickets
+- ✓ Al desactivar un área, los tickets existentes no se afectan
 
 ---
 
 ### 2. SLA (Service Level Agreement)
 
-**Descripción:** Define los acuerdos de nivel de servicio por área y prioridad
+Define los acuerdos de nivel de servicio por área y prioridad
 
-**Nombre en BD:** `SLA`
-
-| Campo | Tipo | Nulo | PK/FK | Default | Descripción | Ejemplo |
-|-------|------|------|-------|---------|-------------|---------|
-| id | UUID | NO | PK | `uuid()` | Identificador único del SLA | `660e8400-e29b-41d4-a716-446655440000` |
-| areaId | UUID | NO | FK → Area | - | Área a la que aplica este SLA | `550e8400-...` |
-| priority | Priority | NO | - | - | Nivel de prioridad (LOW, MEDIUM, HIGH, CRITICAL) | `HIGH` |
-| responseTimeMinutes | INTEGER | NO | - | - | Tiempo máximo de primera respuesta (minutos) | `30` |
-| resolutionTimeMinutes | INTEGER | NO | - | - | Tiempo máximo de resolución (minutos) | `240` |
-| isActive | BOOLEAN | NO | - | `true` | Indica si el SLA está activo | `true` |
-| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación | `2025-01-15 10:00:00` |
-| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización | `2025-01-20 14:30:00` |
-
-**Relaciones:**
-- `area` → **Area** (N:1)
+| Campo | Tipo | Nulo | PK/FK | Default | Descripción |
+|-------|------|------|-------|---------|-------------|
+| id | UUID | NO | PK | `uuid()` | Identificador único del SLA |
+| areaId | UUID | NO | FK → Area | - | Área a la que aplica este SLA |
+| priority | Priority | NO | - | - | Nivel de prioridad |
+| responseTimeMinutes | INTEGER | NO | - | - | Tiempo máximo de primera respuesta (minutos) |
+| resolutionTimeMinutes | INTEGER | NO | - | - | Tiempo máximo de resolución (minutos) |
+| isActive | BOOLEAN | NO | - | `true` | Indica si el SLA está activo |
+| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación |
+| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- `resolutionTimeMinutes` debe ser mayor que `responseTimeMinutes`
-- Solo puede haber un SLA activo por combinación de área + prioridad
-- Los tiempos se miden en minutos hábiles
+- ✓ `resolutionTimeMinutes` debe ser mayor que `responseTimeMinutes`
+- ✓ Solo puede haber un SLA activo por combinación de área + prioridad
+- ✓ Los tiempos se miden en minutos hábiles
 
 ---
 
 ### 3. Workflow
 
-**Descripción:** Define flujos de trabajo personalizados por área
+Define flujos de trabajo personalizados por área
 
-**Nombre en BD:** `Workflow`
+| Campo | Tipo | Nulo | PK/FK | Default | Descripción |
+|-------|------|------|-------|---------|-------------|
+| id | UUID | NO | PK | `uuid()` | Identificador único del workflow |
+| areaId | UUID | NO | FK → Area | - | Área a la que pertenece el workflow |
+| transitions | JSONB | NO | - | - | Definición de transiciones de estado permitidas |
+| requiredFields | JSONB | NO | - | - | Campos requeridos por estado |
 
-| Campo | Tipo | Nulo | PK/FK | Default | Descripción | Ejemplo |
-|-------|------|------|-------|---------|-------------|---------|
-| id | UUID | NO | PK | `uuid()` | Identificador único del workflow | `770e8400-e29b-41d4-a716-446655440000` |
-| areaId | UUID | NO | FK → Area | - | Área a la que pertenece el workflow | `550e8400-...` |
-| transitions | JSONB | NO | - | - | Definición de transiciones de estado permitidas | Ver ejemplo JSON* |
-| requiredFields | JSONB | NO | - | - | Campos requeridos por estado | Ver ejemplo JSON** |
-
-**Relaciones:**
-- `area` → **Area** (N:1)
-
-**Ejemplo JSON* (transitions):**
+**Ejemplo de transitions:**
 ```json
 {
   "OPEN": ["IN_PROGRESS", "PENDING"],
@@ -253,7 +321,7 @@ Este diccionario de datos documenta la estructura de la base de datos del sistem
 }
 ```
 
-**Ejemplo JSON** (requiredFields):**
+**Ejemplo de requiredFields:**
 ```json
 {
   "RESOLVED": ["resolution"],
@@ -265,153 +333,117 @@ Este diccionario de datos documenta la estructura de la base de datos del sistem
 
 ### 4. User
 
-**Descripción:** Usuarios del sistema con roles y permisos
+Usuarios del sistema con roles y permisos
 
-**Nombre en BD:** `User`
-
-| Campo | Tipo | Nulo | PK/FK | Default | Descripción | Ejemplo |
-|-------|------|------|-------|---------|-------------|---------|
-| id | UUID | NO | PK | `uuid()` | Identificador único del usuario | `880e8400-e29b-41d4-a716-446655440000` |
-| name | VARCHAR(255) | NO | - | - | Nombre completo del usuario | `"Juan Pérez García"` |
-| email | VARCHAR(255) | NO | UNIQUE | - | Correo electrónico único | `"juan.perez@hospital.com"` |
-| phone | VARCHAR(20) | SI | - | - | Número de teléfono de contacto | `"+57 300 123 4567"` |
-| role | Role | NO | - | - | Rol del usuario en el sistema | `AGENT` |
-| passwordHash | VARCHAR(255) | NO | - | - | Hash bcrypt de la contraseña | `"$2b$10$..."` |
-| isActive | BOOLEAN | NO | - | `true` | Indica si el usuario está activo | `true` |
-| areaId | UUID | SI | FK → Area | - | Área a la que pertenece el usuario | `550e8400-...` |
-| passwordResetToken | VARCHAR(255) | SI | - | - | Token temporal para reset de contraseña | `"abc123xyz..."` |
-| passwordResetExpires | TIMESTAMP | SI | - | - | Fecha de expiración del token de reset | `2025-01-15 12:00:00` |
-| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación | `2025-01-10 09:00:00` |
-| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización | `2025-01-15 10:30:00` |
-
-**Relaciones:**
-- `area` → **Area** (N:1) - Opcional
-- `requestedTickets` → **Ticket[]** (1:N)
-- `assignedTickets` → **Ticket[]** (1:N)
-- `comments` → **Comment[]** (1:N)
-- `auditTrails` → **AuditTrail[]** (1:N)
+| Campo | Tipo | Nulo | PK/FK | Default | Descripción |
+|-------|------|------|-------|---------|-------------|
+| id | UUID | NO | PK | `uuid()` | Identificador único del usuario |
+| name | VARCHAR(255) | NO | - | - | Nombre completo del usuario |
+| email | VARCHAR(255) | NO | UNIQUE | - | Correo electrónico único |
+| phone | VARCHAR(20) | SI | - | - | Número de teléfono de contacto |
+| role | Role | NO | - | - | Rol del usuario en el sistema |
+| passwordHash | VARCHAR(255) | NO | - | - | Hash bcrypt de la contraseña |
+| isActive | BOOLEAN | NO | - | `true` | Indica si el usuario está activo |
+| areaId | UUID | SI | FK → Area | - | Área a la que pertenece el usuario |
+| passwordResetToken | VARCHAR(255) | SI | - | - | Token temporal para reset de contraseña |
+| passwordResetExpires | TIMESTAMP | SI | - | - | Fecha de expiración del token de reset |
+| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación |
+| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- El email debe ser único en el sistema
-- La contraseña debe tener mínimo 8 caracteres
-- El token de reset expira después de 1 hora
-- Usuarios inactivos no pueden acceder al sistema
+- ✓ El email debe ser único en el sistema
+- ✓ La contraseña debe tener mínimo 8 caracteres
+- ✓ El token de reset expira después de 1 hora
+- ✓ Usuarios inactivos no pueden acceder al sistema
 
 ---
 
 ### 5. Ticket
 
-**Descripción:** Representa una solicitud de soporte o servicio
+Representa una solicitud de soporte o servicio
 
-**Nombre en BD:** `Ticket`
-
-| Campo | Tipo | Nulo | PK/FK | Default | Descripción | Ejemplo |
-|-------|------|------|-------|---------|-------------|---------|
-| id | UUID | NO | PK | `uuid()` | Identificador único del ticket | `990e8400-e29b-41d4-a716-446655440000` |
-| title | VARCHAR(255) | NO | - | - | Título descriptivo del ticket | `"Error en sistema de facturación"` |
-| description | TEXT | NO | - | - | Descripción detallada del problema | `"Al intentar generar factura aparece error 500"` |
-| priority | Priority | NO | - | - | Nivel de prioridad | `HIGH` |
-| status | Status | NO | - | `OPEN` | Estado actual del ticket | `IN_PROGRESS` |
-| areaId | UUID | NO | FK → Area | - | Área responsable del ticket | `550e8400-...` |
-| requesterId | UUID | NO | FK → User | - | Usuario que creó el ticket | `880e8400-...` |
-| assignedToId | UUID | SI | FK → User | - | Usuario asignado para resolver | `881e8400-...` |
-| resolvedAt | TIMESTAMP | SI | - | - | Fecha y hora de resolución | `2025-01-15 14:30:00` |
-| closedAt | TIMESTAMP | SI | - | - | Fecha y hora de cierre | `2025-01-15 15:00:00` |
-| resolution | TEXT | SI | - | - | Descripción de la solución aplicada | `"Se reinició el servicio de base de datos"` |
-| responseTime | TIMESTAMP | SI | - | - | Timestamp de primera respuesta | `2025-01-15 10:30:00` |
-| resolutionTime | TIMESTAMP | SI | - | - | Timestamp de resolución | `2025-01-15 14:30:00` |
-| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación | `2025-01-15 10:00:00` |
-| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización | `2025-01-15 14:30:00` |
-
-**Relaciones:**
-- `area` → **Area** (N:1)
-- `requester` → **User** (N:1)
-- `assignee` → **User** (N:1) - Opcional
-- `comments` → **Comment[]** (1:N)
-- `attachments` → **Attachment[]** (1:N)
-- `auditTrails` → **AuditTrail[]** (1:N)
+| Campo | Tipo | Nulo | PK/FK | Default | Descripción |
+|-------|------|------|-------|---------|-------------|
+| id | UUID | NO | PK | `uuid()` | Identificador único del ticket |
+| title | VARCHAR(255) | NO | - | - | Título descriptivo del ticket |
+| description | TEXT | NO | - | - | Descripción detallada del problema |
+| priority | Priority | NO | - | - | Nivel de prioridad |
+| status | Status | NO | - | `OPEN` | Estado actual del ticket |
+| areaId | UUID | NO | FK → Area | - | Área responsable del ticket |
+| requesterId | UUID | NO | FK → User | - | Usuario que creó el ticket |
+| assignedToId | UUID | SI | FK → User | - | Usuario asignado para resolver |
+| resolvedAt | TIMESTAMP | SI | - | - | Fecha y hora de resolución |
+| closedAt | TIMESTAMP | SI | - | - | Fecha y hora de cierre |
+| resolution | TEXT | SI | - | - | Descripción de la solución aplicada |
+| responseTime | TIMESTAMP | SI | - | - | Timestamp de primera respuesta |
+| resolutionTime | TIMESTAMP | SI | - | - | Timestamp de resolución |
+| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación |
+| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- Un ticket cerrado no puede cambiar de estado
-- `resolvedAt` se establece automáticamente al cambiar status a RESOLVED
-- `closedAt` se establece automáticamente al cambiar status a CLOSED
-- El campo `resolution` es obligatorio para status RESOLVED o CLOSED
+- ✓ Un ticket cerrado no puede cambiar de estado
+- ✓ `resolvedAt` se establece automáticamente al cambiar status a RESOLVED
+- ✓ `closedAt` se establece automáticamente al cambiar status a CLOSED
+- ✓ El campo `resolution` es obligatorio para status RESOLVED o CLOSED
 
 ---
 
 ### 6. Comment
 
-**Descripción:** Comentarios y comunicaciones en un ticket
+Comentarios y comunicaciones en un ticket
 
-**Nombre en BD:** `Comment`
-
-| Campo | Tipo | Nulo | PK/FK | Default | Descripción | Ejemplo |
-|-------|------|------|-------|---------|-------------|---------|
-| id | UUID | NO | PK | `uuid()` | Identificador único del comentario | `aa0e8400-e29b-41d4-a716-446655440000` |
-| ticketId | UUID | NO | FK → Ticket | - | Ticket al que pertenece el comentario | `990e8400-...` |
-| userId | UUID | NO | FK → User | - | Usuario autor del comentario | `880e8400-...` |
-| content | TEXT | NO | - | - | Contenido del comentario | `"Se está investigando el problema"` |
-| isInternal | BOOLEAN | NO | - | `false` | Si es un comentario interno (no visible para requester) | `false` |
-| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación | `2025-01-15 11:00:00` |
-| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización | `2025-01-15 11:05:00` |
-
-**Relaciones:**
-- `ticket` → **Ticket** (N:1)
-- `author` → **User** (N:1)
+| Campo | Tipo | Nulo | PK/FK | Default | Descripción |
+|-------|------|------|-------|---------|-------------|
+| id | UUID | NO | PK | `uuid()` | Identificador único del comentario |
+| ticketId | UUID | NO | FK → Ticket | - | Ticket al que pertenece el comentario |
+| userId | UUID | NO | FK → User | - | Usuario autor del comentario |
+| content | TEXT | NO | - | - | Contenido del comentario |
+| isInternal | BOOLEAN | NO | - | `false` | Si es un comentario interno |
+| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación |
+| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- Comentarios internos solo son visibles para AGENT, TECH y ADMIN
-- No se pueden eliminar comentarios, solo marcar como editados
+- ✓ Comentarios internos solo son visibles para AGENT, TECH y ADMIN
+- ✓ No se pueden eliminar comentarios, solo marcar como editados
 
 ---
 
 ### 7. Attachment
 
-**Descripción:** Archivos adjuntos a tickets
+Archivos adjuntos a tickets
 
-**Nombre en BD:** `Attachment`
-
-| Campo | Tipo | Nulo | PK/FK | Default | Descripción | Ejemplo |
-|-------|------|------|-------|---------|-------------|---------|
-| id | UUID | NO | PK | `uuid()` | Identificador único del adjunto | `bb0e8400-e29b-41d4-a716-446655440000` |
-| ticketId | UUID | NO | FK → Ticket | - | Ticket al que pertenece el adjunto | `990e8400-...` |
-| userId | UUID | NO | FK → User | - | Usuario que subió el archivo | `880e8400-...` |
-| fileName | VARCHAR(255) | NO | - | - | Nombre original del archivo | `"captura_error.png"` |
-| filePath | VARCHAR(500) | NO | - | - | Ruta de almacenamiento del archivo | `"/uploads/2025/01/uuid-file.png"` |
-| mimeType | VARCHAR(100) | NO | - | - | Tipo MIME del archivo | `"image/png"` |
-| fileSize | INTEGER | NO | - | - | Tamaño del archivo en bytes | `1048576` (1MB) |
-| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de subida | `2025-01-15 10:15:00` |
-
-**Relaciones:**
-- `ticket` → **Ticket** (N:1)
+| Campo | Tipo | Nulo | PK/FK | Default | Descripción |
+|-------|------|------|-------|---------|-------------|
+| id | UUID | NO | PK | `uuid()` | Identificador único del adjunto |
+| ticketId | UUID | NO | FK → Ticket | - | Ticket al que pertenece el adjunto |
+| userId | UUID | NO | FK → User | - | Usuario que subió el archivo |
+| fileName | VARCHAR(255) | NO | - | - | Nombre original del archivo |
+| filePath | VARCHAR(500) | NO | - | - | Ruta de almacenamiento del archivo |
+| mimeType | VARCHAR(100) | NO | - | - | Tipo MIME del archivo |
+| fileSize | INTEGER | NO | - | - | Tamaño del archivo en bytes |
+| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de subida |
 
 **Reglas de negocio:**
-- Tamaño máximo por archivo: 10MB (configurable)
-- Tipos de archivo permitidos: imágenes, PDFs, documentos Office
-- Al eliminar un ticket, se eliminan físicamente sus adjuntos
+- ✓ Tamaño máximo por archivo: 10MB (configurable)
+- ✓ Tipos de archivo permitidos: imágenes, PDFs, documentos Office
+- ✓ Al eliminar un ticket, se eliminan físicamente sus adjuntos
 
 ---
 
 ### 8. AuditTrail
 
-**Descripción:** Registro de auditoría de todas las acciones sobre tickets
+Registro de auditoría de todas las acciones sobre tickets
 
-**Nombre en BD:** `AuditTrail`
+| Campo | Tipo | Nulo | PK/FK | Default | Descripción |
+|-------|------|------|-------|---------|-------------|
+| id | UUID | NO | PK | `uuid()` | Identificador único del registro |
+| ticketId | UUID | NO | FK → Ticket | - | Ticket auditado |
+| actorId | UUID | NO | FK → User | - | Usuario que realizó la acción |
+| action | VARCHAR(100) | NO | - | - | Tipo de acción realizada |
+| details | JSONB | SI | - | - | Detalles adicionales de la acción |
+| occurredAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de la acción |
 
-| Campo | Tipo | Nulo | PK/FK | Default | Descripción | Ejemplo |
-|-------|------|------|-------|---------|-------------|---------|
-| id | UUID | NO | PK | `uuid()` | Identificador único del registro | `cc0e8400-e29b-41d4-a716-446655440000` |
-| ticketId | UUID | NO | FK → Ticket | - | Ticket auditado | `990e8400-...` |
-| actorId | UUID | NO | FK → User | - | Usuario que realizó la acción | `880e8400-...` |
-| action | VARCHAR(100) | NO | - | - | Tipo de acción realizada | `"STATUS_CHANGED"` |
-| details | JSONB | SI | - | - | Detalles adicionales de la acción | Ver ejemplo JSON*** |
-| occurredAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de la acción | `2025-01-15 12:00:00` |
-
-**Relaciones:**
-- `ticket` → **Ticket** (N:1)
-- `actor` → **User** (N:1)
-
-**Ejemplo JSON*** (details):**
+**Ejemplo de details:**
 ```json
 {
   "field": "status",
@@ -435,27 +467,22 @@ Este diccionario de datos documenta la estructura de la base de datos del sistem
 
 ### 9. KnowledgeArticle
 
-**Descripción:** Artículos de base de conocimientos para soluciones comunes
+Artículos de base de conocimientos para soluciones comunes
 
-**Nombre en BD:** `KnowledgeArticle`
-
-| Campo | Tipo | Nulo | PK/FK | Default | Descripción | Ejemplo |
-|-------|------|------|-------|---------|-------------|---------|
-| id | UUID | NO | PK | `uuid()` | Identificador único del artículo | `dd0e8400-e29b-41d4-a716-446655440000` |
-| title | VARCHAR(255) | NO | - | - | Título del artículo | `"Cómo reiniciar el servidor de impresión"` |
-| content | TEXT | NO | - | - | Contenido completo del artículo (Markdown) | `"## Pasos\n1. Acceder a..."` |
-| areaId | UUID | SI | FK → Area | - | Área relacionada (opcional) | `550e8400-...` |
-| tags | VARCHAR[] | NO | - | `[]` | Etiquetas para búsqueda | `["impresión", "servidor", "windows"]` |
-| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación | `2025-01-10 09:00:00` |
-| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización | `2025-01-15 10:00:00` |
-
-**Relaciones:**
-- `area` → **Area** (N:1) - Opcional
+| Campo | Tipo | Nulo | PK/FK | Default | Descripción |
+|-------|------|------|-------|---------|-------------|
+| id | UUID | NO | PK | `uuid()` | Identificador único del artículo |
+| title | VARCHAR(255) | NO | - | - | Título del artículo |
+| content | TEXT | NO | - | - | Contenido completo del artículo (Markdown) |
+| areaId | UUID | SI | FK → Area | - | Área relacionada (opcional) |
+| tags | VARCHAR[] | NO | - | `[]` | Etiquetas para búsqueda |
+| createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de creación |
+| updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- El contenido se almacena en formato Markdown
-- Los artículos pueden ser globales (sin área) o específicos de un área
-- Las etiquetas se usan para búsqueda y categorización
+- ✓ El contenido se almacena en formato Markdown
+- ✓ Los artículos pueden ser globales (sin área) o específicos de un área
+- ✓ Las etiquetas se usan para búsqueda y categorización
 
 ---
 
@@ -508,7 +535,6 @@ User (1) ─────< (N) AuditTrail
 - `SLA.id` - PRIMARY KEY
 - `Ticket.id` - PRIMARY KEY
 - `User.id` - PRIMARY KEY
-- etc.
 
 ### Índices Recomendados (Performance)
 
@@ -537,7 +563,6 @@ CREATE INDEX idx_knowledge_tags ON KnowledgeArticle USING GIN(tags);
 
 ### Restricciones de Integridad
 
-**Check Constraints:**
 ```sql
 -- SLA: tiempo de resolución debe ser mayor que tiempo de respuesta
 ALTER TABLE SLA ADD CONSTRAINT chk_sla_times
@@ -557,7 +582,7 @@ ALTER TABLE Attachment ADD CONSTRAINT chk_attachment_size
 
 ---
 
-## Notas Adicionales
+## 📝 Notas Adicionales
 
 ### Convenciones de Nomenclatura
 - **Tablas:** PascalCase singular (User, Ticket, Area)
@@ -572,13 +597,14 @@ ALTER TABLE Attachment ADD CONSTRAINT chk_attachment_size
 - **VARCHAR(n):** Longitud variable con límite
 
 ### Consideraciones de Seguridad
-- Las contraseñas se almacenan con hash bcrypt (cost factor: 10)
-- Los tokens de reset tienen expiración automática
-- Los comentarios internos tienen control de acceso por rol
-- Todos los cambios críticos se auditan en AuditTrail
+- 🔒 Las contraseñas se almacenan con hash bcrypt (cost factor: 10)
+- 🔒 Los tokens de reset tienen expiración automática
+- 🔒 Los comentarios internos tienen control de acceso por rol
+- 🔒 Todos los cambios críticos se auditan en AuditTrail
 
 ---
 
-  
+## 📄 Licencia
 
+Este proyecto es propiedad de Juan Miguel Ramírez Mancilla.
 
