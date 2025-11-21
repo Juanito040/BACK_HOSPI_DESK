@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum Status {
+  OPEN
+  IN_PROGRESS
+  PENDING
+  RESOLVED
+  CLOSED
+}
+
+enum Role {
+  REQUESTER
+  AGENT
+  TECH
+  ADMIN
+}
+
+model Area {
+  id                 String             @id @default(uuid())
+  name               String
+  description        String?
+  isActive           Boolean            @default(true)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  users              User[]
+  tickets            Ticket[]
+  slas               SLA[]
+  workflows          Workflow[]
+  knowledgeArticles  KnowledgeArticle[]
+}
+
+model SLA {
+  id                    String   @id @default(uuid())
+  areaId                String
+  priority              Priority
+  responseTimeMinutes   Int
+  resolutionTimeMinutes Int
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  area                  Area     @relation(fields: [areaId], references: [id], onDelete: Cascade)
+}
+
+model Workflow {
+  id              String @id @default(uuid())
+  areaId          String
+  transitions     Json
+  requiredFields  Json
+  area            Area   @relation(fields: [areaId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                    String    @id @default(uuid())
+  name                  String
+  email                 String    @unique
+  phone                 String?
+  role                  Role
+  passwordHash          String
+  isActive              Boolean   @default(true)
+  areaId                String?
+  passwordResetToken    String?
+  passwordResetExpires  DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  area                  Area?     @relation(fields: [areaId], references: [id])
+  requestedTickets      Ticket[]  @relation("RequestedTickets")
+  assignedTickets       Ticket[]  @relation("AssignedTickets")
+  comments              Comment[]
+  auditTrails           AuditTrail[]
+}
+
+model Ticket {
+  id               String      @id @default(uuid())
+  title            String
+  description      String
+  priority         Priority
+  status           Status      @default(OPEN)
+  areaId           String
+  requesterId      String
+  assignedToId     String?
+  resolvedAt       DateTime?
+  closedAt         DateTime?
+  resolution       String?
+  responseTime     DateTime?
+  resolutionTime   DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  area             Area        @relation(fields: [areaId], references: [id])
+  requester        User        @relation("RequestedTickets", fields: [requesterId], references: [id])
+  assignee         User?       @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  comments         Comment[]
+  attachments      Attachment[]
+  auditTrails      AuditTrail[]
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  ticketId   String
+  userId     String
+  content    String
+  isInternal Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  ticket     Ticket   @relation(fields: [ticketId], references: [id])
+  author     User     @relation(fields: [userId], references: [id])
+}
+
+model Attachment {
+  id          String   @id @default(uuid())
+  ticketId    String
+  userId      String
+  fileName    String
+  filePath    String
+  mimeType    String
+  fileSize    Int
+  createdAt   DateTime @default(now())
+  ticket      Ticket   @relation(fields: [ticketId], references: [id])
+}
+
+model AuditTrail {
+  id         String   @id @default(uuid())
+  ticketId   String
+  actorId    String
+  action     String
+  details    Json?
+  occurredAt DateTime @default(now())
+  ticket     Ticket   @relation(fields: [ticketId], references: [id])
+  actor      User     @relation(fields: [actorId], references: [id])
+}
+
+model KnowledgeArticle {
+  id         String   @id @default(uuid())
+  title      String
+  content    String
+  areaId     String?
+  area       Area?    @relation(fields: [areaId], references: [id])
+  tags       String[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
