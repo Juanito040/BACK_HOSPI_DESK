@@ -8,7 +8,7 @@
 
 ---
 
-## 📋 Tabla de Contenidos
+## Tabla de Contenidos
 
 - [Instrucciones de Instalación](#-instrucciones-de-instalación)
 - [Catálogo de Patrones de Diseño](#-catálogo-de-patrones-de-diseño)
@@ -32,7 +32,7 @@
 
 ---
 
-## 🚀 Instrucciones de Instalación
+## Instrucciones de Instalación
 
 ### Requisitos Previos
 - Node.js (versión recomendada: LTS)
@@ -58,21 +58,21 @@
    npm run dev
    ```
 
-> **⚠️ NOTA IMPORTANTE:** Asegúrate de tener Node.js instalado y ejecutar `npm install` antes de iniciar el proyecto.
+> **NOTA IMPORTANTE:** Asegúrate de tener Node.js instalado y ejecutar `npm install` antes de iniciar el proyecto.
 
 ---
 
-## 🎨 Catálogo de Patrones de Diseño
+## Catálogo de Patrones de Diseño
 
 Este proyecto implementa múltiples patrones de diseño basados en **Domain-Driven Design (DDD)** y **Clean Architecture** para garantizar un código mantenible, escalable y testeable.
 
 ### 1. Repository Pattern
 
-**📍 Ubicación:** `src/infrastructure/repositories/PrismaTicketRepository.ts`
+**Ubicación:** `src/infrastructure/repositories/PrismaTicketRepository.ts`
 
-**🎯 Propósito:** Abstraer la lógica de persistencia de datos del dominio.
+**Propósito:** Abstraer la lógica de persistencia de datos del dominio.
 
-**✅ Ventaja:** Permite cambiar Prisma por otro ORM o fuente de datos sin afectar la lógica del dominio.
+**Ventaja:** Permite cambiar Prisma por otro ORM o fuente de datos sin afectar la lógica del dominio.
 
 **Ejemplo de implementación:**
 ```typescript
@@ -92,29 +92,29 @@ export class PrismaTicketRepository implements TicketRepository {
 
 ### 2. Strategy Pattern
 
-**📍 Ubicación:** `src/domain/services/SlaCalculator.ts`
+**Ubicación:** `src/domain/services/SlaCalculator.ts`
 
-**🎯 Propósito:** Permitir distintas estrategias de cálculo de SLA según tipo de ticket.
+**Propósito:** Permitir distintas estrategias de cálculo de SLA según tipo de ticket.
 
-**✅ Ventaja:** Facilita agregar nuevas políticas sin modificar el código existente.
+**Ventaja:** Facilita agregar nuevas políticas sin modificar el código existente.
 
 ---
 
 ### 3. Event Bus / Domain Events
 
-**📍 Ubicación:** `src/infrastructure/events/`
+**Ubicación:** `src/infrastructure/events/`
 
-**🎯 Propósito:** Manejar eventos del dominio como `TicketCreated`, `SlaBreached`.
+**Propósito:** Manejar eventos del dominio como `TicketCreated`, `SlaBreached`.
 
-**✅ Ventaja:** Desacopla los módulos y permite reacciones asíncronas (por ejemplo, enviar correo o notificación).
+**Ventaja:** Desacopla los módulos y permite reacciones asíncronas (por ejemplo, enviar correo o notificación).
 
 ---
 
 ### 4. Value Object
 
-**📍 Ubicación:** `src/domain/value-objects/Email.ts`, `src/domain/value-objects/Priority.ts`
+**Ubicación:** `src/domain/value-objects/Email.ts`, `src/domain/value-objects/Priority.ts`
 
-**🎯 Propósito:** Encapsular valores inmutables y validar su creación.
+**Propósito:** Encapsular valores inmutables y validar su creación.
 
 **Ejemplo de implementación:**
 ```typescript
@@ -133,19 +133,19 @@ export class Email {
 
 ### 5. Dependency Injection
 
-**📍 Ubicación:** `src/main.ts`
+**Ubicación:** `src/main.ts`
 
-**🎯 Propósito:** Inyectar dependencias en lugar de crearlas directamente.
+**Propósito:** Inyectar dependencias en lugar de crearlas directamente.
 
-**✅ Ventaja:** Facilita el testing y la extensión del sistema.
+**Ventaja:** Facilita el testing y la extensión del sistema.
 
 ---
 
 ### 6. CQRS (Command Query Responsibility Segregation)
 
-**📍 Ubicación:** `src/application/use-cases/`
+**Ubicación:** `src/application/use-cases/`
 
-**🎯 Propósito:** Separar operaciones de lectura (queries) y escritura (commands).
+**Propósito:** Separar operaciones de lectura (queries) y escritura (commands).
 
 **Ejemplo:** `CreateTicket` (command) vs `ListTickets` (query)
 
@@ -153,53 +153,53 @@ export class Email {
 
 ### 7. Middleware Pattern
 
-**📍 Ubicación:** `src/interfaces/http/middlewares/`
+**Ubicación:** `src/interfaces/http/middlewares/`
 
-**🎯 Propósito:** Interceptar peticiones HTTP para manejar autenticación, validación o rate limiting.
+**Propósito:** Interceptar peticiones HTTP para manejar autenticación, validación o rate limiting.
 
 ---
 
 ### 8. Factory Pattern
 
-**📍 Ubicación:** `src/domain/services/TicketFactory.ts`
+**Ubicación:** `src/domain/services/TicketFactory.ts`
 
-**🎯 Propósito:** Centralizar la creación de entidades complejas.
+**Propósito:** Centralizar la creación de entidades complejas.
 
 ---
 
 ### 9. RBAC (Role-Based Access Control)
 
-**📍 Ubicación:** `src/infrastructure/security/`
+**Ubicación:** `src/infrastructure/security/`
 
-**🎯 Propósito:** Controlar el acceso según roles (Admin, Agente, Usuario).
+**Propósito:** Controlar el acceso según roles (Admin, Agente, Usuario).
 
 ---
 
 ### 10. Adapter Pattern
 
-**📍 Ubicación:** `src/infrastructure/notif/`
+**Ubicación:** `src/infrastructure/notif/`
 
-**🎯 Propósito:** Unificar distintas formas de notificación (Email, SMS, Webhook).
+**Propósito:** Unificar distintas formas de notificación (Email, SMS, Webhook).
 
 ---
 
 ### 11. Mapper Pattern
 
-**📍 Ubicación:** `src/interfaces/mappers/`
+**Ubicación:** `src/interfaces/mappers/`
 
-**🎯 Propósito:** Convertir DTOs a entidades de dominio y viceversa.
+**Propósito:** Convertir DTOs a entidades de dominio y viceversa.
 
 ---
 
 ### 12. Domain Service
 
-**📍 Ubicación:** `src/domain/services/`
+**Ubicación:** `src/domain/services/`
 
-**🎯 Propósito:** Encapsular lógica que pertenece al dominio, pero no a una sola entidad.
+**Propósito:** Encapsular lógica que pertenece al dominio, pero no a una sola entidad.
 
 ---
 
-## 📊 Diccionario de Datos
+## Diccionario de Datos
 
 ### Información General
 
@@ -208,11 +208,11 @@ export class Email {
 **Versión:** 1.0
 
 **Características principales:**
-- ✅ Gestión multiárea con SLAs configurables
-- ✅ Sistema de roles y permisos (RBAC)
-- ✅ Auditoría completa de acciones
-- ✅ Gestión de adjuntos y comentarios
-- ✅ Base de conocimientos integrada
+- Gestión multiárea con SLAs configurables
+- Sistema de roles y permisos (RBAC)
+- Auditoría completa de acciones
+- Gestión de adjuntos y comentarios
+- Base de conocimientos integrada
 
 ---
 
@@ -271,9 +271,9 @@ Representa las diferentes áreas o departamentos del hospital (TI, Mantenimiento
 | updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- ✓ El nombre del área debe ser único
-- ✓ Solo áreas activas pueden recibir nuevos tickets
-- ✓ Al desactivar un área, los tickets existentes no se afectan
+- El nombre del área debe ser único
+- Solo áreas activas pueden recibir nuevos tickets
+- Al desactivar un área, los tickets existentes no se afectan
 
 ---
 
@@ -293,9 +293,9 @@ Define los acuerdos de nivel de servicio por área y prioridad
 | updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- ✓ `resolutionTimeMinutes` debe ser mayor que `responseTimeMinutes`
-- ✓ Solo puede haber un SLA activo por combinación de área + prioridad
-- ✓ Los tiempos se miden en minutos hábiles
+- `resolutionTimeMinutes` debe ser mayor que `responseTimeMinutes`
+- Solo puede haber un SLA activo por combinación de área + prioridad
+- Los tiempos se miden en minutos hábiles
 
 ---
 
@@ -351,10 +351,10 @@ Usuarios del sistema con roles y permisos
 | updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- ✓ El email debe ser único en el sistema
-- ✓ La contraseña debe tener mínimo 8 caracteres
-- ✓ El token de reset expira después de 1 hora
-- ✓ Usuarios inactivos no pueden acceder al sistema
+- El email debe ser único en el sistema
+- La contraseña debe tener mínimo 8 caracteres
+- El token de reset expira después de 1 hora
+- Usuarios inactivos no pueden acceder al sistema
 
 ---
 
@@ -381,10 +381,10 @@ Representa una solicitud de soporte o servicio
 | updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- ✓ Un ticket cerrado no puede cambiar de estado
-- ✓ `resolvedAt` se establece automáticamente al cambiar status a RESOLVED
-- ✓ `closedAt` se establece automáticamente al cambiar status a CLOSED
-- ✓ El campo `resolution` es obligatorio para status RESOLVED o CLOSED
+- Un ticket cerrado no puede cambiar de estado
+- `resolvedAt` se establece automáticamente al cambiar status a RESOLVED
+- `closedAt` se establece automáticamente al cambiar status a CLOSED
+- El campo `resolution` es obligatorio para status RESOLVED o CLOSED
 
 ---
 
@@ -403,8 +403,8 @@ Comentarios y comunicaciones en un ticket
 | updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- ✓ Comentarios internos solo son visibles para AGENT, TECH y ADMIN
-- ✓ No se pueden eliminar comentarios, solo marcar como editados
+- Comentarios internos solo son visibles para AGENT, TECH y ADMIN
+- No se pueden eliminar comentarios, solo marcar como editados
 
 ---
 
@@ -424,9 +424,9 @@ Archivos adjuntos a tickets
 | createdAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de subida |
 
 **Reglas de negocio:**
-- ✓ Tamaño máximo por archivo: 10MB (configurable)
-- ✓ Tipos de archivo permitidos: imágenes, PDFs, documentos Office
-- ✓ Al eliminar un ticket, se eliminan físicamente sus adjuntos
+- Tamaño máximo por archivo: 10MB (configurable)
+- Tipos de archivo permitidos: imágenes, PDFs, documentos Office
+- Al eliminar un ticket, se eliminan físicamente sus adjuntos
 
 ---
 
@@ -480,9 +480,9 @@ Artículos de base de conocimientos para soluciones comunes
 | updatedAt | TIMESTAMP | NO | - | `now()` | Fecha y hora de última actualización |
 
 **Reglas de negocio:**
-- ✓ El contenido se almacena en formato Markdown
-- ✓ Los artículos pueden ser globales (sin área) o específicos de un área
-- ✓ Las etiquetas se usan para búsqueda y categorización
+- El contenido se almacena en formato Markdown
+- Los artículos pueden ser globales (sin área) o específicos de un área
+- Las etiquetas se usan para búsqueda y categorización
 
 ---
 
@@ -582,7 +582,7 @@ ALTER TABLE Attachment ADD CONSTRAINT chk_attachment_size
 
 ---
 
-## 📝 Notas Adicionales
+## Notas Adicionales
 
 ### Convenciones de Nomenclatura
 - **Tablas:** PascalCase singular (User, Ticket, Area)
@@ -597,14 +597,14 @@ ALTER TABLE Attachment ADD CONSTRAINT chk_attachment_size
 - **VARCHAR(n):** Longitud variable con límite
 
 ### Consideraciones de Seguridad
-- 🔒 Las contraseñas se almacenan con hash bcrypt (cost factor: 10)
-- 🔒 Los tokens de reset tienen expiración automática
-- 🔒 Los comentarios internos tienen control de acceso por rol
-- 🔒 Todos los cambios críticos se auditan en AuditTrail
+- Las contraseñas se almacenan con hash bcrypt (cost factor: 10)
+- Los tokens de reset tienen expiración automática
+- Los comentarios internos tienen control de acceso por rol
+- Todos los cambios críticos se auditan en AuditTrail
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto es propiedad de Juan Miguel Ramírez Mancilla.
 
