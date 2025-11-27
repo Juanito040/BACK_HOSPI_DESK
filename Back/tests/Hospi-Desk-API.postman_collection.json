@@ -1,0 +1,1035 @@
+{
+  "info": {
+    "name": "Hospi-Desk API - Complete Collection",
+    "description": "Colección completa de endpoints para la API de Hospi-Desk",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "areaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ticketId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "commentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "slaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "attachmentId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Verifica que el servidor está funcionando correctamente"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('userId', data.user.id);",
+                  "    console.log('Usuario registrado con ID:', data.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Juan Pérez\",\n  \"email\": \"juan.perez@hospital.com\",\n  \"password\": \"Password123!\",\n  \"phone\": \"+573001234567\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Registra un nuevo usuario en el sistema"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('token', data.token);",
+                  "    pm.collectionVariables.set('userId', data.user.id);",
+                  "    console.log('Token guardado:', data.token);",
+                  "    console.log('User ID:', data.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan.perez@hospital.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Inicia sesión y obtiene un token JWT"
+          },
+          "response": []
+        },
+        {
+          "name": "Request Password Reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan.perez@hospital.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/request-password-reset",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "request-password-reset"]
+            },
+            "description": "Solicita un reset de contraseña"
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset-token-here\",\n  \"newPassword\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "reset-password"]
+            },
+            "description": "Resetea la contraseña con el token recibido"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Areas",
+      "item": [
+        {
+          "name": "Create Area",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('areaId', data.id);",
+                  "    console.log('Área creada con ID:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Soporte Técnico\",\n  \"description\": \"Área encargada de soporte técnico e infraestructura IT\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/areas",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas"]
+            },
+            "description": "Crea una nueva área en el sistema"
+          },
+          "response": []
+        },
+        {
+          "name": "List All Areas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/areas",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas"]
+            },
+            "description": "Lista todas las áreas"
+          },
+          "response": []
+        },
+        {
+          "name": "List Active Areas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/areas?activeOnly=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas"],
+              "query": [
+                {
+                  "key": "activeOnly",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Lista solo áreas activas"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Area by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/areas/{{areaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas", "{{areaId}}"]
+            },
+            "description": "Obtiene los detalles de un área específica"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Area",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Soporte Técnico TI\",\n  \"description\": \"Área actualizada de soporte técnico\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/areas/{{areaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas", "{{areaId}}"]
+            },
+            "description": "Actualiza los datos de un área"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Area",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/areas/{{areaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas", "{{areaId}}"]
+            },
+            "description": "Elimina un área del sistema"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. SLAs",
+      "item": [
+        {
+          "name": "Create SLA - CRITICAL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('slaId', data.id);",
+                  "    console.log('SLA creado con ID:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"priority\": \"CRITICAL\",\n  \"responseTimeMinutes\": 15,\n  \"resolutionTimeMinutes\": 120\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/slas",
+              "host": ["{{baseUrl}}"],
+              "path": ["slas"]
+            },
+            "description": "Crea un SLA para prioridad CRITICAL"
+          },
+          "response": []
+        },
+        {
+          "name": "Create SLA - HIGH",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"priority\": \"HIGH\",\n  \"responseTimeMinutes\": 30,\n  \"resolutionTimeMinutes\": 240\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/slas",
+              "host": ["{{baseUrl}}"],
+              "path": ["slas"]
+            },
+            "description": "Crea un SLA para prioridad HIGH"
+          },
+          "response": []
+        },
+        {
+          "name": "Create SLA - MEDIUM",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"priority\": \"MEDIUM\",\n  \"responseTimeMinutes\": 60,\n  \"resolutionTimeMinutes\": 480\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/slas",
+              "host": ["{{baseUrl}}"],
+              "path": ["slas"]
+            },
+            "description": "Crea un SLA para prioridad MEDIUM"
+          },
+          "response": []
+        },
+        {
+          "name": "Create SLA - LOW",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"priority\": \"LOW\",\n  \"responseTimeMinutes\": 240,\n  \"resolutionTimeMinutes\": 1440\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/slas",
+              "host": ["{{baseUrl}}"],
+              "path": ["slas"]
+            },
+            "description": "Crea un SLA para prioridad LOW"
+          },
+          "response": []
+        },
+        {
+          "name": "List All SLAs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/slas",
+              "host": ["{{baseUrl}}"],
+              "path": ["slas"]
+            },
+            "description": "Lista todos los SLAs"
+          },
+          "response": []
+        },
+        {
+          "name": "List SLAs by Area",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/slas?areaId={{areaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["slas"],
+              "query": [
+                {
+                  "key": "areaId",
+                  "value": "{{areaId}}"
+                }
+              ]
+            },
+            "description": "Lista SLAs filtrados por área"
+          },
+          "response": []
+        },
+        {
+          "name": "Get SLA by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/slas/{{slaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["slas", "{{slaId}}"]
+            },
+            "description": "Obtiene los detalles de un SLA específico"
+          },
+          "response": []
+        },
+        {
+          "name": "Update SLA",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"responseTimeMinutes\": 45,\n  \"resolutionTimeMinutes\": 300\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/slas/{{slaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["slas", "{{slaId}}"]
+            },
+            "description": "Actualiza los tiempos de un SLA"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete SLA",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/slas/{{slaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["slas", "{{slaId}}"]
+            },
+            "description": "Elimina un SLA del sistema"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Tickets",
+      "item": [
+        {
+          "name": "Create Ticket",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('ticketId', data.id);",
+                  "    console.log('Ticket creado con ID:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Impresora no funciona\",\n  \"description\": \"La impresora del segundo piso no imprime documentos desde esta mañana. Muestra error de conexión.\",\n  \"priority\": \"HIGH\",\n  \"areaId\": \"{{areaId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            },
+            "description": "Crea un nuevo ticket"
+          },
+          "response": []
+        },
+        {
+          "name": "List All Tickets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            },
+            "description": "Lista todos los tickets"
+          },
+          "response": []
+        },
+        {
+          "name": "List Tickets - With Filters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets?status=OPEN&priority=HIGH&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "OPEN",
+                  "description": "OPEN, IN_PROGRESS, PENDING, RESOLVED, CLOSED"
+                },
+                {
+                  "key": "priority",
+                  "value": "HIGH",
+                  "description": "LOW, MEDIUM, HIGH, CRITICAL"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Lista tickets con filtros y paginación"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ticket by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{ticketId}}"]
+            },
+            "description": "Obtiene los detalles completos de un ticket"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Ticket",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignedToId\": \"{{userId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/assign",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{ticketId}}", "assign"]
+            },
+            "description": "Asigna un ticket a un técnico"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Ticket Status - IN_PROGRESS",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_PROGRESS\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{ticketId}}", "status"]
+            },
+            "description": "Cambia el estado del ticket a EN PROGRESO"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Ticket Status - RESOLVED",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"RESOLVED\",\n  \"resolution\": \"Se reinició la impresora y se actualizaron los drivers. El problema se resolvió.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{ticketId}}", "status"]
+            },
+            "description": "Marca el ticket como RESUELTO con una resolución"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Ticket Status - CLOSED",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CLOSED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{ticketId}}", "status"]
+            },
+            "description": "Cierra el ticket"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Comments",
+      "item": [
+        {
+          "name": "Create Comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('commentId', data.id);",
+                  "    console.log('Comentario creado con ID:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ticketId\": \"{{ticketId}}\",\n  \"content\": \"Estoy revisando el problema de la impresora. Parece ser un problema de conectividad.\",\n  \"isInternal\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments"]
+            },
+            "description": "Agrega un comentario a un ticket"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Internal Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ticketId\": \"{{ticketId}}\",\n  \"content\": \"Nota interna: Este es un problema recurrente en esa área. Revisar infraestructura de red.\",\n  \"isInternal\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments"]
+            },
+            "description": "Agrega un comentario interno (solo visible para el equipo)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Attachments",
+      "item": [
+        {
+          "name": "Upload Attachment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('attachmentId', data.id);",
+                  "    console.log('Archivo subido con ID:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/path/to/file.png",
+                  "description": "Selecciona el archivo a subir"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attachments/upload/{{ticketId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["attachments", "upload", "{{ticketId}}"]
+            },
+            "description": "Sube un archivo adjunto a un ticket"
+          },
+          "response": []
+        },
+        {
+          "name": "Download Attachment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/attachments/download?attachmentId={{attachmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["attachments", "download"],
+              "query": [
+                {
+                  "key": "attachmentId",
+                  "value": "{{attachmentId}}"
+                }
+              ]
+            },
+            "description": "Descarga un archivo adjunto"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Attachment",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/attachments/{{attachmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["attachments", "{{attachmentId}}"]
+            },
+            "description": "Elimina un archivo adjunto"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Audit Trail",
+      "item": [
+        {
+          "name": "Get Audit by Ticket",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/audit/ticket/{{ticketId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["audit", "ticket", "{{ticketId}}"]
+            },
+            "description": "Obtiene el historial de auditoría de un ticket"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Audit by Actor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/audit/actor/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["audit", "actor", "{{userId}}"]
+            },
+            "description": "Obtiene todas las acciones realizadas por un usuario"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

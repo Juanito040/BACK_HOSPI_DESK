@@ -1,0 +1,157 @@
+.users-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.users-header h1 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 28px;
+}
+
+.users-subtitle {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.users-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.users-filters select {
+  max-width: 250px;
+}
+
+.users-table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table thead {
+  background: #f8f9fa;
+}
+
+.users-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.users-table td {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #666;
+}
+
+.users-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.users-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.user-phone {
+  font-size: 12px;
+  color: #999;
+}
+
+.badge-requester {
+  background: #6c757d;
+  color: white;
+}
+
+.badge-agent {
+  background: #17a2b8;
+  color: white;
+}
+
+.badge-tech {
+  background: #667eea;
+  color: white;
+}
+
+.badge-admin {
+  background: #dc3545;
+  color: white;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.no-users {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.no-users p {
+  margin: 8px 0;
+}
+
+.help-text {
+  font-size: 14px;
+  color: #666;
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .users-table-container {
+    overflow-x: auto;
+  }
+
+  .users-table {
+    min-width: 800px;
+  }
+}
+
+@media (max-width: 768px) {
+  .users-page {
+    padding: 16px;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+}
